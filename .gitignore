@@ -1,0 +1,90 @@
+# =======================================================================
+# FILENAME: .gitignore (Optimized for Unity 6.5 Server-Authoritative 3D)
+# =======================================================================
+
+### --- UNITY 6.5 CORE DIRECTORIES (DO NOT TRACK) ---
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/Build/
+/Builds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Unity 6.5 New Cache Systems
+/[Ss]hader[Cc]ache/
+.vs-code-unity-extensions/
+
+### --- MULTIPLAYER & ADDRESSABLES DATA-DRIVEN ---
+# Chặn dữ liệu build Addressables (Chỉ sinh ra khi build, không đưa lên Git)
+/[Aa]ssets/[Aa]ddressable[Aa]sset[Dd]ata/[Cc]lient[Bb]uild/
+/[Aa]ssets/[Aa]ddressable[Aa]sset[Dd]ata/[Pp]latform/
+/[Aa]ssets/[Ss]treamingAssets/aa/
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+
+### --- IDEs & CACHE DIRECTORIES ---
+.vs/
+.gradle/
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.idea/
+*.sln.iml
+
+### --- AUTOMATIC EXTRACTIONS & CRASH REPORTS ---
+sysinfo.txt
+crashlytics-build.properties
+mono_crash.*
+
+### --- PLATFORM BUILDS (OUTPUTS) ---
+*.apk
+*.aab
+*.unitypackage
+*.app
+*.dll
+*.so
+*.dylib
+
+### --- OS & WINDOWS CLEANUP ---
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+### --- DEVELOPMENT UTILITIES ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# =======================================================================
+# LƯU Ý KIẾN TRÚC: ĐÃ XÓA BỎ DÒNG "*.meta" ĐỂ BẢO VỆ TOÀN VẸN LIÊN KẾT GAME.
+# TOÀN BỘ FILE .fbx, .png, .wav... PHẢI ĐƯỢC TRACK QUA .gitattributes (LFS).
+# =======================================================================
