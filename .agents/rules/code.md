@@ -72,3 +72,22 @@ Sử dụng cấu trúc thư mục quy hoạch rõ rệt trong `Assets/_Datas/` 
 * Áp dụng Data-Driven Design: Lưu toàn bộ chỉ số cân bằng game (sát thương, lượng máu, tốc độ) vào ScriptableObjects, tuyệt đối không hard-code số liệu vào kịch bản C#.
 * Không lưu trữ các tài nguyên nặng vào thư mục `Resources` mặc định của Unity.
 * Bắt buộc dùng Unity Addressables System để tải bất đồng bộ (LoadAssetAsync) các model 3D nặng hoặc map đấu từ RAM, và giải phóng ngay (ReleaseAsset) khi không còn sử dụng.
+
+## 9. quản lý log
+* luôn đọc log ở unity editor mỗi khi thêm hoặc thay đổi code mới xem có lỗi không (d:\archive\Unity_Project\3D-Game-Project-t\Logs\Editor.log)
+
+## 10. Quản lý Input
+* sử dụng input system mới (MInputSystem/MInputSystem.cs)
+
+
+
+
+
+
+
+
+
+
+
+
+
