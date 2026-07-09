@@ -79,17 +79,29 @@ public static class NetworkSceneCreator
         GameObject existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         if (existingPrefab != null)
         {
-            return existingPrefab;
+            if (existingPrefab.GetComponent<PlayerCameraFollow>() == null)
+            {
+                GameObject instance = PrefabUtility.InstantiatePrefab(existingPrefab) as GameObject;
+                if (instance != null)
+                {
+                    instance.AddComponent<PlayerCameraFollow>();
+                    PrefabUtility.SaveAsPrefabAsset(instance, prefabPath);
+                    GameObject.DestroyImmediate(instance);
+                    Debug.Log($"[Architecture] Added PlayerCameraFollow to existing Player Network Prefab.");
+                }
+            }
+            return AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         }
 
         // Nếu chưa có, tạo mới một GameObject tạm
         GameObject tempPlayer = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         tempPlayer.name = "PlayerNetwork";
 
-        // Thêm các Component mạng
+        // Thêm các Component mạng và camera follow
         tempPlayer.AddComponent<NetworkObject>();
         tempPlayer.AddComponent<NetworkTransform>();
         tempPlayer.AddComponent<PlayerNetworkMovement>();
+        tempPlayer.AddComponent<PlayerCameraFollow>();
 
         // Lưu thành Asset Prefab
         GameObject playerPrefab = PrefabUtility.SaveAsPrefabAsset(tempPlayer, prefabPath);
@@ -97,7 +109,7 @@ public static class NetworkSceneCreator
         // Hủy GameObject tạm thời trong Editor
         GameObject.DestroyImmediate(tempPlayer);
 
-        Debug.Log($"[Architecture] Successfully created Player Network Prefab at: {prefabPath}");
+        Debug.Log($"[Architecture] Successfully created Player Network Prefab with Camera Follow at: {prefabPath}");
         return playerPrefab;
     }
 }

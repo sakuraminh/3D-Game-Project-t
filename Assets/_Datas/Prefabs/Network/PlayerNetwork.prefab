@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6809322598627931730}
   - component: {fileID: 2731512719561655740}
   - component: {fileID: 478774609339246360}
+  - component: {fileID: 6156113383710111648}
   m_Layer: 0
   m_Name: PlayerNetwork
   m_TagString: Untagged
@@ -129,8 +130,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3381718961
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 2512171672
+  InScenePlacedSourceGlobalObjectIdHash: 2026440661
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
@@ -203,3 +204,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Shared.PlayerNetworkMovement
   ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 5
+  rotationSpeed: 12
+--- !u!114 &6156113383710111648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913001420107324358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7ee03e32b8b5ca4fb2a6aa691501899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Client.PlayerCameraFollow
+  ShowTopMostFoldoutHeaderGroup: 1
+  cameraOffset: {x: 0, y: 6, z: -9}
+  smoothSpeed: 8
