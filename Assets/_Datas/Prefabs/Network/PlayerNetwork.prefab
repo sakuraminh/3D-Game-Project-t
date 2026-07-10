@@ -14,8 +14,12 @@ GameObject:
   - component: {fileID: 1133457142091509510}
   - component: {fileID: 6809322598627931730}
   - component: {fileID: 2731512719561655740}
-  - component: {fileID: 478774609339246360}
   - component: {fileID: 6156113383710111648}
+  - component: {fileID: 7010729895664258573}
+  - component: {fileID: 75015421671887881}
+  - component: {fileID: 5796944278042065406}
+  - component: {fileID: 3323849152830045024}
+  - component: {fileID: 7984801241008231298}
   m_Layer: 0
   m_Name: PlayerNetwork
   m_TagString: Untagged
@@ -130,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2512171672
+  GlobalObjectIdHash: 4111651452
   InScenePlacedSourceGlobalObjectIdHash: 2026440661
   DeferredDespawnTick: 0
   Ownership: 1
@@ -190,21 +194,6 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
---- !u!114 &478774609339246360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 913001420107324358}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b520f1785e7308b488b04ad537970a72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Shared.PlayerNetworkMovement
-  ShowTopMostFoldoutHeaderGroup: 1
-  moveSpeed: 5
-  rotationSpeed: 12
 --- !u!114 &6156113383710111648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,5 +207,79 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Client.PlayerCameraFollow
   ShowTopMostFoldoutHeaderGroup: 1
-  cameraOffset: {x: 0, y: 6, z: -9}
-  smoothSpeed: 8
+  _cameraOffset: {x: 0, y: 6, z: -9}
+  _smoothSpeed: 8
+--- !u!114 &7010729895664258573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913001420107324358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f2dd6557db137049b4c20c596121747, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Shared.PlayerNetworkHandler
+  ShowTopMostFoldoutHeaderGroup: 1
+  _characterConfig: {fileID: 0}
+--- !u!114 &75015421671887881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913001420107324358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c8f09ae7f6cec140819f364e7dbb75f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Client.PlayerInputHandler
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &5796944278042065406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913001420107324358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a38dccb72983ff2469b8cf551c389818, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Server.PlayerMovement
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &3323849152830045024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913001420107324358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8141709ac465d164181265119c598736, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Server.PlayerStateMachine
+  ShowTopMostFoldoutHeaderGroup: 1
+  _attackDuration: 0.5
+--- !u!205 &7984801241008231298
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 913001420107324358}
+  serializedVersion: 3
+  m_LocalReferencePoint: {x: 0, y: 0, z: 0}
+  m_Size: 2
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.3
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 1133457142091509510}
+  m_Enabled: 1
+  m_GlobalIlluminationLOD: 0

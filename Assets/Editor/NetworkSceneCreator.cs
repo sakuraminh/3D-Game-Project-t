@@ -7,7 +7,7 @@ using Unity.Netcode.Transports.UTP;
 using Unity.Netcode.Components;
 
 using Client; // Cho ConnectionHUD
-using Shared; // Cho PlayerNetworkMovement
+using Shared; // Cho PlayerNetworkHandler
 
 public static class NetworkSceneCreator
 {
@@ -79,15 +79,47 @@ public static class NetworkSceneCreator
         GameObject existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
         if (existingPrefab != null)
         {
-            if (existingPrefab.GetComponent<PlayerCameraFollow>() == null)
+            // Kiểm tra xem prefab cũ có cần nâng cấp component hay không
+            var hasOldMovement = existingPrefab.GetComponent("PlayerNetworkMovement") != null;
+            var hasNetworkHandler = existingPrefab.GetComponent<PlayerNetworkHandler>() != null;
+            var hasInputHandler = existingPrefab.GetComponent<PlayerInputHandler>() != null;
+            var hasMovement = existingPrefab.GetComponent<Server.PlayerMovement>() != null;
+            var hasStateMachine = existingPrefab.GetComponent<Server.PlayerStateMachine>() != null;
+            var hasCameraFollow = existingPrefab.GetComponent<PlayerCameraFollow>() != null;
+            var hasLODGroup = existingPrefab.GetComponent<LODGroup>() != null;
+
+            if (hasOldMovement || !hasNetworkHandler || !hasInputHandler || !hasMovement || !hasStateMachine || !hasCameraFollow || !hasLODGroup)
             {
                 GameObject instance = PrefabUtility.InstantiatePrefab(existingPrefab) as GameObject;
                 if (instance != null)
                 {
-                    instance.AddComponent<PlayerCameraFollow>();
+                    // Xóa toàn bộ component bị missing script (bao gồm cả PlayerNetworkMovement cũ đã bị xóa)
+                    GameObjectUtility.RemoveMonoBehavioursWithMissingScript(instance);
+
+                    // Gắn các component phân rã mới
+                    if (instance.GetComponent<PlayerNetworkHandler>() == null)
+                        instance.AddComponent<PlayerNetworkHandler>();
+                    if (instance.GetComponent<PlayerInputHandler>() == null)
+                        instance.AddComponent<PlayerInputHandler>();
+                    if (instance.GetComponent<Server.PlayerMovement>() == null)
+                        instance.AddComponent<Server.PlayerMovement>();
+                    if (instance.GetComponent<Server.PlayerStateMachine>() == null)
+                        instance.AddComponent<Server.PlayerStateMachine>();
+                    if (instance.GetComponent<PlayerCameraFollow>() == null)
+                        instance.AddComponent<PlayerCameraFollow>();
+                    if (instance.GetComponent<LODGroup>() == null)
+                    {
+                        var prefabLodGroup = instance.AddComponent<LODGroup>();
+                        LOD[] prefabLods = new LOD[1];
+                        Renderer[] prefabRenderers = instance.GetComponentsInChildren<Renderer>();
+                        prefabLods[0] = new LOD(0.3f, prefabRenderers);
+                        prefabLodGroup.SetLODs(prefabLods);
+                        prefabLodGroup.RecalculateBounds();
+                    }
+
                     PrefabUtility.SaveAsPrefabAsset(instance, prefabPath);
                     GameObject.DestroyImmediate(instance);
-                    Debug.Log($"[Architecture] Added PlayerCameraFollow to existing Player Network Prefab.");
+                    Debug.Log($"[Architecture] Upgraded existing Player Network Prefab to Single Responsibility and FSM components.");
                 }
             }
             return AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
@@ -100,8 +132,19 @@ public static class NetworkSceneCreator
         // Thêm các Component mạng và camera follow
         tempPlayer.AddComponent<NetworkObject>();
         tempPlayer.AddComponent<NetworkTransform>();
-        tempPlayer.AddComponent<PlayerNetworkMovement>();
+        tempPlayer.AddComponent<PlayerNetworkHandler>();
+        tempPlayer.AddComponent<PlayerInputHandler>();
+        tempPlayer.AddComponent<Server.PlayerMovement>();
+        tempPlayer.AddComponent<Server.PlayerStateMachine>();
         tempPlayer.AddComponent<PlayerCameraFollow>();
+
+        // Thêm LODGroup tượng trưng tối ưu hóa đa giác
+        var lodGroup = tempPlayer.AddComponent<LODGroup>();
+        LOD[] lods = new LOD[1];
+        Renderer[] renderers = tempPlayer.GetComponentsInChildren<Renderer>();
+        lods[0] = new LOD(0.3f, renderers);
+        lodGroup.SetLODs(lods);
+        lodGroup.RecalculateBounds();
 
         // Lưu thành Asset Prefab
         GameObject playerPrefab = PrefabUtility.SaveAsPrefabAsset(tempPlayer, prefabPath);
@@ -109,7 +152,7 @@ public static class NetworkSceneCreator
         // Hủy GameObject tạm thời trong Editor
         GameObject.DestroyImmediate(tempPlayer);
 
-        Debug.Log($"[Architecture] Successfully created Player Network Prefab with Camera Follow at: {prefabPath}");
+        Debug.Log($"[Architecture] Successfully created Player Network Prefab with Single Responsibility components at: {prefabPath}");
         return playerPrefab;
     }
 }

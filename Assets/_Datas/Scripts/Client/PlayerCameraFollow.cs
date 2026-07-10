@@ -3,10 +3,13 @@ using UnityEngine;
 
 namespace Client
 {
+    /// <summary>
+    /// Component điều khiển Camera di chuyển mượt mà theo nhân vật sở hữu (Client-only).
+    /// </summary>
     public class PlayerCameraFollow : NetworkBehaviour
     {
-        [SerializeField] private Vector3 cameraOffset = new Vector3(0f, 6f, -9f);
-        [SerializeField] private float smoothSpeed = 8f;
+        [SerializeField] private Vector3 _cameraOffset = new Vector3(0f, 6f, -9f);
+        [SerializeField] private float _smoothSpeed = 8f;
 
         private Transform _cameraTransform;
 
@@ -34,10 +37,10 @@ namespace Client
             if (!IsOwner || _cameraTransform == null) return;
 
             // Vị trí Camera mong muốn
-            Vector3 targetPos = transform.position + cameraOffset;
+            Vector3 targetPos = transform.position + _cameraOffset;
 
             // Di chuyển Camera mượt mà tới vị trí mong muốn
-            _cameraTransform.position = Vector3.Lerp(_cameraTransform.position, targetPos, smoothSpeed * Time.deltaTime);
+            _cameraTransform.position = Vector3.Lerp(_cameraTransform.position, targetPos, _smoothSpeed * Time.deltaTime);
 
             // Quay Camera luôn nhìn vào Player (nhích lên một chút ngang tầm ngực/đầu)
             _cameraTransform.LookAt(transform.position + Vector3.up * 1f);
