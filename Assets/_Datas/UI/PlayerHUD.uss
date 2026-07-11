@@ -1,0 +1,190 @@
+/* Container chính bao phủ toàn màn hình */
+.hud-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    justify-content: space-between;
+    padding: 24px;
+}
+
+/* Bảng hiển thị HP/MP ở góc trên bên trái */
+.stats-panel {
+    align-self: flex-start;
+    width: 280px;
+    background-color: rgba(20, 20, 20, 0.65);
+    border-color: rgba(255, 255, 255, 0.12);
+    border-width: 1px;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+/* Định dạng thanh ProgressBar */
+.hud-bar {
+    margin-bottom: 8px;
+    height: 22px;
+}
+
+.hud-bar .unity-progress-bar__container {
+    height: 22px;
+    max-height: 22px;
+    min-height: 22px;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-width: 0px;
+}
+
+.hud-bar .unity-progress-bar__background {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-width: 0px;
+}
+
+/* Định dạng phần trượt tăng giảm giá trị (Progress) */
+.hud-bar .unity-progress-bar__progress {
+    border-radius: 6px;
+    transition-property: width;
+    transition-duration: 0.25s;
+    transition-timing-function: ease-out;
+}
+
+/* Màu sắc của thanh HP */
+.hp-bar .unity-progress-bar__progress {
+    background-color: #FF3333;
+}
+
+/* Màu sắc của thanh MP */
+.mp-bar .unity-progress-bar__progress {
+    background-color: #3399FF;
+}
+
+/* Text hiển thị chỉ số */
+.hud-bar .unity-progress-bar__title {
+    color: #FFFFFF;
+    font-size: 11px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+}
+
+/* Container chứa kỹ năng ở giữa phía dưới */
+.skill-container {
+    align-self: center;
+    flex-direction: row;
+    background-color: rgba(20, 20, 20, 0.65);
+    border-color: rgba(255, 255, 255, 0.12);
+    border-width: 1px;
+    border-radius: 14px;
+    padding: 10px 16px;
+    margin-bottom: 10px;
+}
+
+/* Từng ô kỹ năng */
+.skill-slot {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(40, 40, 40, 0.85);
+    border-color: rgba(255, 255, 255, 0.15);
+    border-width: 1px;
+    border-radius: 10px;
+    margin: 0 6px;
+    justify-content: center;
+    align-items: center;
+    transition-property: scale, border-color, background-color;
+    transition-duration: 0.15s;
+}
+
+/* Hover effect */
+.skill-slot:hover {
+    scale: 1.08;
+    border-color: #3399FF;
+    background-color: rgba(60, 60, 60, 0.95);
+}
+
+/* Ký tự phím tắt */
+.key-bind {
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    -unity-font-style: bold;
+}
+
+/* Tên kỹ năng hiển thị */
+.skill-name {
+    font-size: 11px;
+    color: #FFFFFF;
+    -unity-text-align: middle-center;
+    margin-top: 8px;
+}
+
+/* Bảng hòm đồ (Inventory Panel) */
+.inventory-panel {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+    width: 320px;
+    height: 480px;
+    background-color: rgba(15, 15, 15, 0.82);
+    border-color: rgba(255, 255, 255, 0.12);
+    border-width: 1px;
+    border-radius: 16px;
+    padding: 18px;
+    /* Mặc định ẩn bảng đi */
+    display: none;
+}
+
+/* Tiêu đề bảng hòm đồ */
+.inventory-title {
+    font-size: 16px;
+    color: #FFFFFF;
+    -unity-font-style: bold;
+    margin-bottom: 14px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+    padding-bottom: 6px;
+    -unity-text-align: middle-center;
+}
+
+/* List view chứa danh sách vật phẩm */
+.inventory-list {
+    flex-grow: 1;
+    background-color: transparent;
+}
+
+/* Dòng hiển thị vật phẩm mẫu */
+.inventory-item-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 40px;
+    padding: 0 12px;
+    margin-bottom: 6px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.02);
+    transition-property: background-color, scale;
+    transition-duration: 0.12s;
+}
+
+/* Hover row */
+.inventory-item-row:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Tên vật phẩm */
+.item-name {
+    font-size: 13px;
+    color: #E6E6E6;
+    -unity-font-style: bold;
+}
+
+/* Số lượng vật phẩm */
+.item-quantity {
+    font-size: 12px;
+    color: #3399FF;
+    -unity-font-style: bold;
+}

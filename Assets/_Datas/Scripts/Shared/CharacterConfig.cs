@@ -10,11 +10,13 @@ namespace Shared
     {
         [Header("Base Stats")]
         [SerializeField] private float _maxHealth = 100f;
+        [SerializeField] private float _maxMana = 100f;
         [SerializeField] private float _baseDefense = 10f;
         [SerializeField] private float _moveSpeed = 5f;
         [SerializeField] private float _rotationSpeed = 12f;
 
         public float MaxHealth => _maxHealth;
+        public float MaxMana => _maxMana;
         public float BaseDefense => _baseDefense;
         public float MoveSpeed => _moveSpeed;
         public float RotationSpeed => _rotationSpeed;

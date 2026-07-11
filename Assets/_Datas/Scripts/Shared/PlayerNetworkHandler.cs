@@ -7,6 +7,8 @@ namespace Shared
     /// Component Shared chịu trách nhiệm đồng bộ trạng thái mạng,
     /// tiếp nhận input thô từ Client qua RPC, validate và lưu trữ trạng thái để Server xử lý.
     /// </summary>
+    [RequireComponent(typeof(PlayerNetworkData))]
+    [RequireComponent(typeof(Server.PlayerServerCombat))]
     public class PlayerNetworkHandler : NetworkBehaviour
     {
         // NetworkVariable đồng bộ trạng thái nhân vật từ Server xuống toàn bộ Client
@@ -152,6 +154,52 @@ namespace Shared
                     _stateMachine.TransitionTo(PlayerState.Dead);
                     Debug.Log($"[PlayerNetworkHandler] Client {OwnerClientId} died on Server.");
                 }
+            }
+        }
+
+        /// <summary>
+        /// RPC từ Client gửi yêu cầu hồi máu lên Server.
+        /// </summary>
+        [ServerRpc]
+        public void RequestHealServerRpc()
+        {
+            var serverCombat = GetComponent<Server.PlayerServerCombat>();
+            if (serverCombat != null)
+            {
+                serverCombat.ProcessHealRequest();
+            }
+            else
+            {
+                Debug.LogWarning($"[PlayerNetworkHandler] PlayerServerCombat component not found on Client {OwnerClientId}'s Player object.");
+            }
+        }
+
+        /// <summary>
+        /// RPC từ Client gửi yêu cầu sử dụng kỹ năng lên Server.
+        /// </summary>
+        [ServerRpc]
+        public void RequestCastSkillServerRpc(int skillIndex)
+        {
+            var serverCombat = GetComponent<Server.PlayerServerCombat>();
+            if (serverCombat != null)
+            {
+                serverCombat.ProcessCastSkillRequest(skillIndex);
+            }
+            else
+            {
+                Debug.LogWarning($"[PlayerNetworkHandler] PlayerServerCombat component not found on Client {OwnerClientId}'s Player object.");
+            }
+        }
+
+        /// <summary>
+        /// RPC từ Server gửi xuống toàn bộ Client để phát hiệu ứng số nhảy sát thương.
+        /// </summary>
+        [ClientRpc]
+        public void PlayHitEffectClientRpc(int damageAmount, Vector3 position)
+        {
+            if (Client.DamageTextPoolManager.Instance != null)
+            {
+                Client.DamageTextPoolManager.Instance.SpawnDamageText(damageAmount, position);
             }
         }
     }

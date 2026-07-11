@@ -130,3 +130,7 @@ Mọi màn hình giao diện, bảng chức năng hoặc hiệu ứng hình ản
 ##### Hệ thống Số nhảy và Thanh máu 3D
 * Toàn bộ Giao diện Số nhảy Sát thương (Damage Text) và Thanh máu nổi trên đầu quái vật bắt buộc phải được quản lý tập trung thông qua hệ thống **Object Pooling** đặt trong nhóm root rỗng `[LOCAL_EFFECTS]` (Tọa độ gốc 0,0,0, độ sâu Hierarchy tối đa 4 tầng).
 * Tuyệt đối cấm sử dụng lệnh `Instantiate()` và `Destroy()` khi sinh số damage hoặc khi quái vật xuất hiện/nằm xuống. Toàn bộ hành vi phải là lấy từ Pool ra (`SetActive(true)`), chạy Tween hoạt ảnh, và trả về Pool (`SetActive(false)`).
+
+## 12. Quản lý Components
+* Tự thêm các component bằng RequireComponent
+* luôn kiểm tra null trước khi getcomponent

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/_Datas/UI/PlayerHUD.uss" />
+    <ui:VisualElement name="hud-container" class="hud-container" picking-mode="Ignore">
+        <ui:VisualElement name="stats-panel" class="stats-panel" picking-mode="Ignore">
+            <ui:ProgressBar name="hp-bar" class="hud-bar hp-bar" title="HP: 100/100" value="100" high-value="100" />
+            <ui:ProgressBar name="mp-bar" class="hud-bar mp-bar" title="MP: 100/100" value="100" high-value="100" />
+        </ui:VisualElement>
+        <ui:VisualElement name="skill-container" class="skill-container" picking-mode="Ignore">
+            <ui:VisualElement class="skill-slot" picking-mode="Ignore">
+                <ui:Label text="1" class="key-bind" />
+                <ui:Label text="Heal" class="skill-name" />
+            </ui:VisualElement>
+            <ui:VisualElement class="skill-slot" picking-mode="Ignore">
+                <ui:Label text="2" class="key-bind" />
+                <ui:Label text="Slash" class="skill-name" />
+            </ui:VisualElement>
+            <ui:VisualElement class="skill-slot" picking-mode="Ignore">
+                <ui:Label text="3" class="key-bind" />
+                <ui:Label text="Ultimate" class="skill-name" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="inventory-panel" class="inventory-panel" picking-mode="Normal">
+            <ui:Label text="INVENTORY" class="inventory-title" />
+            <ui:ListView name="inventory-list" class="inventory-list" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
