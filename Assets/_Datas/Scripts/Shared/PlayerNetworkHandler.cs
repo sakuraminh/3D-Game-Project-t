@@ -53,6 +53,31 @@ namespace Shared
                     }
                 }
             }
+
+            if (IsClient)
+            {
+                CurrentState.OnValueChanged += OnStateChanged;
+            }
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (IsClient)
+            {
+                CurrentState.OnValueChanged -= OnStateChanged;
+            }
+            base.OnNetworkDespawn();
+        }
+
+        private void OnStateChanged(PlayerState oldState, PlayerState newState)
+        {
+            if (IsOwner && newState == PlayerState.Dead)
+            {
+                if (Client.ResurrectionUIHandler.Instance != null)
+                {
+                    Client.ResurrectionUIHandler.Instance.Show();
+                }
+            }
         }
 
         /// <summary>
@@ -184,12 +209,12 @@ namespace Shared
         /// RPC từ Client gửi yêu cầu sử dụng kỹ năng lên Server.
         /// </summary>
         [ServerRpc]
-        public void RequestCastSkillServerRpc(int skillIndex)
+        public void RequestCastSkillServerRpc(int skillIndex, NetworkObjectReference targetRef)
         {
             var serverCombat = GetComponent<Server.PlayerServerCombat>();
             if (serverCombat != null)
             {
-                serverCombat.ProcessCastSkillRequest(skillIndex);
+                serverCombat.ProcessCastSkillRequest(skillIndex, targetRef);
             }
             else
             {

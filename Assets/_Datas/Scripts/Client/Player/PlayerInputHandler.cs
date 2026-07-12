@@ -14,6 +14,8 @@ namespace Client
         private Shared.PlayerNetworkHandler _networkHandler;
         private PlayerHUDUIHandler _hudUIHandler;
 
+        private NetworkObject _currentTarget;
+
         private void Awake()
         {
             _networkHandler = GetComponent<Shared.PlayerNetworkHandler>();
@@ -33,7 +35,32 @@ namespace Client
                     _networkHandler.SendMoveInputServerRpc(moveInput);
                 }
 
-                // 2. Bắt phím tắt hành động sử dụng Input System mới (Keyboard.current)
+                // 2. Chọn mục tiêu quái vật khi nhấn chuột trái
+                if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+                    if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+                    {
+                        var enemyData = hit.collider.GetComponentInParent<Shared.EnemyNetworkData>();
+                        if (enemyData != null)
+                        {
+                            var netObj = enemyData.GetComponent<NetworkObject>();
+                            if (netObj != null && netObj.IsSpawned)
+                            {
+                                _currentTarget = netObj;
+                                Debug.Log($"[PlayerInputHandler] Selected target: {enemyData.gameObject.name} (ID: {netObj.NetworkObjectId})", gameObject);
+                            }
+                        }
+                        else
+                        {
+                            // Nếu click ra ngoài hoặc click vào thứ không phải quái vật, bỏ chọn mục tiêu
+                            _currentTarget = null;
+                            Debug.Log("[PlayerInputHandler] Target cleared.", gameObject);
+                        }
+                    }
+                }
+
+                // 3. Bắt phím tắt hành động sử dụng Input System mới (Keyboard.current)
                 if (Keyboard.current != null)
                 {
                     // Phím I: Mở/đóng hòm đồ (Local UI Toggle)
@@ -54,13 +81,13 @@ namespace Client
                     // Phím 2: Dùng Kỹ năng 1 ở index 0 (Server-validated RPC)
                     if (Keyboard.current.digit2Key.wasPressedThisFrame)
                     {
-                        _networkHandler.RequestCastSkillServerRpc(0);
+                        _networkHandler.RequestCastSkillServerRpc(0, _currentTarget != null ? _currentTarget : default);
                     }
 
                     // Phím 3: Dùng Kỹ năng 2 ở index 1 (Server-validated RPC)
                     if (Keyboard.current.digit3Key.wasPressedThisFrame)
                     {
-                        _networkHandler.RequestCastSkillServerRpc(1);
+                        _networkHandler.RequestCastSkillServerRpc(1, _currentTarget != null ? _currentTarget : default);
                     }
                 }
 #endif

@@ -18,6 +18,8 @@ Mã nguồn được phân tách rõ ràng theo mô hình mạng và được đ
 * [PlayerNetworkHandler.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Shared/PlayerNetworkHandler.cs): Trọng tâm kết nối, xử lý sự kiện nạp dữ liệu mạng khi spawn nhân vật. Tích hợp Network Culling (30m).
 * [ServerAuthoritativeNetworkPool.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Shared/ServerAuthoritativeNetworkPool.cs): Cơ chế pooling đối tượng mạng đồng bộ hóa dưới sự kiểm soát của Server.
 * [ResourceManager.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Shared/ResourceManager.cs): Quản lý tải tài nguyên động thông qua Addressables hoặc nạp trực tiếp.
+* [GameplayManager.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Shared/GameplayManager.cs): Quản lý trạng thái chung và xử lý yêu cầu hồi sinh từ Client không sở hữu thực thể (RequireOwnership = false).
+
 
 ### 🔹 [Server](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Server) (Logic chỉ chạy trên Server)
 * [NetworkEntityFactory.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Server/NetworkEntityFactory.cs): Factory mẫu khởi tạo tập trung các Network Object nhằm bảo vệ tính toàn vẹn của Server-Authoritative. Tự động phân nhóm các thực thể Player vào `[Players]` và Enemy vào `[Enemies]` lồng bên dưới GameObject cha gốc `[NetworkEntitys]`.
@@ -34,8 +36,9 @@ Mã nguồn được phân tách rõ ràng theo mô hình mạng và được đ
 * [InputManager.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/InputManager.cs) & [PlayerInputHandler.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/PlayerInputHandler.cs): Đăng ký và lắng nghe dữ liệu từ Input System mới của Unity.
 * [PlayerCameraFollow.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/PlayerCameraFollow.cs): Cơ chế Camera bám theo Player cục bộ.
 * [PlayerHUDUIHandler.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/PlayerHUDUIHandler.cs): HUD chính (máu, năng lượng, thanh kỹ năng) xây dựng bằng UI Toolkit (sử dụng UXML & USS), lắng nghe sự độ thay đổi chỉ số bằng Observer Pattern thay vì polling.
-* [PlayerOverheadUIHandler.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/PlayerOverheadUIHandler.cs): Thanh máu nổi trên đầu nhân vật (World-Space UGUI).
-* [EnemyOverheadUIHandler.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/EnemyOverheadUIHandler.cs): Thanh máu nổi trên đầu quái vật (World-Space UGUI) và tải mô hình 3D động qua Addressables. Tích hợp cơ chế phòng vệ chống đệ quy lặp vô hạn khi tải mô hình.
+* [PlayerOverheadUIHandler.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/Player/PlayerOverheadUIHandler.cs): Thanh máu nổi trên đầu nhân vật (World-Space UGUI).
+* [ResurrectionUIHandler.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/Player/ResurrectionUIHandler.cs): Giao diện thông báo chết và nút Hồi sinh sinh tự động tại runtime bằng UI Toolkit.
+* [EnemyOverheadUIHandler.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/Enemy/EnemyOverheadUIHandler.cs): Thanh máu nổi trên đầu quái vật (World-Space UGUI) kế thừa NetworkBehaviour để đồng bộ đúng với Object Pooling. Tích hợp cơ chế phòng vệ chống đệ quy lặp vô hạn khi tải mô hình.
 * [DamageTextPoolManager.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/DamageTextPoolManager.cs) & [FloatingDamageText.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Client/FloatingDamageText.cs): Hệ thống số nhảy sát thương sử dụng Object Pooling tối ưu RAM và GC.
 
 ---
@@ -56,6 +59,11 @@ Mã nguồn được phân tách rõ ràng theo mô hình mạng và được đ
    - Sửa đổi `GoblinConfig.asset` làm trống `_modelAddressableKey` để tránh tự nhân bản.
    - Cập nhật `NetworkEntityFactory.cs` tự động thu gom các thực thể Player vào `[Players]` và Enemy vào `[Enemies]` lồng bên trong GameObject cha gốc `[NetworkEntitys]`. Bổ sung hook gộp nhóm trong `OnNetworkSpawn` của `PlayerNetworkHandler.cs` để hỗ trợ cả trường hợp Player được Netcode tự động sinh ra (Auto Spawn).
    - Cấu trúc lại `DamageTextPoolManager.cs` tự động gom nhóm toàn bộ các chữ số nhảy sát thương (Floating Damage Text) dưới root cha rỗng `[LOCAL_EFFECTS] / [DamageTexts]`.
+10. **Xoay camera, Chọn mục tiêu, Kỹ năng đánh quái, Chết & Hồi sinh qua Pool, Đồng bộ HP**:
+    - Tích hợp tính năng nhấn giữ chuột phải để xoay camera mượt mà quanh Player.
+    - Click chuột trái vào quái vật để chọn mục tiêu tấn công và truyền target lên Server qua RPC kỹ năng (Lựa chọn A).
+    - Cấu hình Player chết tự động despawn đưa về Pool sau 2 giây trễ. Sinh Resurrection UI lúc runtime hiển thị nút Hồi sinh, gửi RPC qua `GameplayManager` để lấy lại Player mới từ Pool và thiết lập lại PlayerObject.
+    - Chuyển `EnemyOverheadUIHandler` sang NetworkBehaviour, đồng bộ chuẩn xác sự kiện thay đổi máu để slider HP nổi trên đầu tụt mượt mà theo lượng máu khi chịu sát thương.
 
 ---
 

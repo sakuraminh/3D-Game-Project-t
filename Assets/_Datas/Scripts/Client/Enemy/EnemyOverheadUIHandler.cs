@@ -1,3 +1,4 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 using Shared;
@@ -8,7 +9,7 @@ namespace Client
     /// Component Client quản lý Canvas hiển thị máu nổi trên đầu quái vật và tải mô hình 3D động từ Addressables.
     /// </summary>
     [RequireComponent(typeof(EnemyNetworkData))]
-    public class EnemyOverheadUIHandler : MonoBehaviour
+    public class EnemyOverheadUIHandler : NetworkBehaviour
     {
         [Header("UI References")]
         [SerializeField] private Canvas _overheadCanvas;
@@ -77,8 +78,10 @@ namespace Client
             _instantiatedModel.transform.localRotation = Quaternion.identity;
         }
 
-        private void OnEnable()
+        public override void OnNetworkSpawn()
         {
+            base.OnNetworkSpawn();
+
             if (_networkData != null)
             {
                 // Đăng ký lắng nghe sự kiện thay đổi máu từ NetworkVariable của EnemyNetworkData (Observer Pattern)
@@ -90,7 +93,7 @@ namespace Client
             }
         }
 
-        private void OnDisable()
+        public override void OnNetworkDespawn()
         {
             if (_networkData != null)
             {
@@ -98,6 +101,7 @@ namespace Client
                 _networkData.CurrentHP.OnValueChanged -= HandleHealthChanged;
                 _networkData.MaxHP.OnValueChanged -= HandleMaxHealthChanged;
             }
+            base.OnNetworkDespawn();
         }
 
         private void LateUpdate()
@@ -137,8 +141,9 @@ namespace Client
             }
         }
 
-        private void OnDestroy()
+        public override void OnDestroy()
         {
+            base.OnDestroy();
             // Giải phóng tài nguyên Addressable khỏi bộ nhớ RAM để chống tràn (Memory Leak)
             if (_loadedPrefab != null)
             {

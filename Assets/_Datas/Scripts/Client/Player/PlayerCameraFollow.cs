@@ -13,6 +13,22 @@ namespace Client
 
         private Transform _cameraTransform;
 
+        [Header("Rotation Settings")]
+        [SerializeField] private float _rotationSpeed = 5f;
+        [SerializeField] private float _minPitch = 10f;
+        [SerializeField] private float _maxPitch = 85f;
+
+        private float _yaw = 0f;
+        private float _pitch = 33.7f;
+        private float _distance;
+
+        private void Start()
+        {
+            this.LoadComponents();
+            _distance = _cameraOffset.magnitude;
+            _yaw = transform.eulerAngles.y;
+        }
+
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
@@ -36,6 +52,20 @@ namespace Client
             // Chỉ thực hiện LateUpdate trên Client sở hữu nhân vật
             if (!IsOwner || _cameraTransform == null) return;
 
+            // Quay camera khi nhấn giữ chuột phải
+            if (UnityEngine.InputSystem.Mouse.current != null && 
+                UnityEngine.InputSystem.Mouse.current.rightButton.isPressed)
+            {
+                Vector2 mouseDelta = UnityEngine.InputSystem.Mouse.current.delta.ReadValue();
+                _yaw += mouseDelta.x * _rotationSpeed * 0.1f;
+                _pitch -= mouseDelta.y * _rotationSpeed * 0.1f;
+                _pitch = Mathf.Clamp(_pitch, _minPitch, _maxPitch);
+
+                // Cập nhật camera offset mới
+                Quaternion rotation = Quaternion.Euler(_pitch, _yaw, 0f);
+                _cameraOffset = rotation * new Vector3(0f, 0f, -_distance);
+            }
+
             // Vị trí Camera mong muốn
             Vector3 targetPos = transform.position + _cameraOffset;
 
@@ -45,5 +75,22 @@ namespace Client
             // Quay Camera luôn nhìn vào Player (nhích lên một chút ngang tầm ngực/đầu)
             _cameraTransform.LookAt(transform.position + Vector3.up * 1f);
         }
+ 
+        protected void LoadComponents() 
+        {
+            this.LoadCamera();
+        }
+
+        protected void LoadCamera()
+        {
+            if (Camera.main == null && _cameraTransform != null)
+            {
+                Debug.LogWarning((Camera.main == null) + " - " + (_cameraTransform != null) + " - ", gameObject);
+                return; 
+            }
+            this._cameraTransform = Camera.main.transform;
+            Debug.Log("[PlayerCameraFollow] Main Camera found! " + this._cameraTransform.name, gameObject);
+        }
     }
 }
+ 

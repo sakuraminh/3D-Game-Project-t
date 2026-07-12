@@ -15,6 +15,7 @@ Mọi màn hình giao diện, bảng chức năng hoặc hiệu ứng hình ản
 * **Danh sách áp dụng:** HUD chính (HP/MP/EXP), Phím tắt kỹ năng, Khung Chat mạng, Bảng Tổ đội/Bạn bè, Cửa sổ Shop/Giao dịch, Cây Kỹ năng, Nhật ký nhiệm vụ, Menu tĩnh (Main Menu, Setting, Lobby).
 * **Cấu trúc lưu trữ:** Thiết kế bố cục bằng file `.uxml`, định dạng thẩm mỹ và layout (Flexbox) bằng file `.uss`.
 * **Mục tiêu tối ưu:** Triệt tiêu hoàn toàn hiện tượng nghẽn cổ chai CPU do Canvas Rebuild của hệ thống cũ. Đảm bảo Responsive tự động co giãn theo tỉ lệ màn hình (16:9, 21:9, Mobile).
+* **Tự động hóa UI Toolkit bằng C# Code:** Nhằm tránh việc người dùng phải thao tác kéo thả phức tạp hoặc sửa đổi file UXML thủ công trong Unity Editor
 
 #### Nhóm UGUI (Ép buộc cho World-Space UI - Giao diện trong không gian 3D)
 * **Danh sách áp dụng:** Thanh máu trên đầu nhân vật/quái vật (Overhead Nameplates/Healthbars), Số nhảy sát thương/hồi phục (Floating Damage Text).

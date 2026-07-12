@@ -90,7 +90,7 @@ namespace Server
         /// <summary>
         /// Xử lý và validate yêu cầu sử dụng kỹ năng từ Client.
         /// </summary>
-        public void ProcessCastSkillRequest(int skillIndex)
+        public void ProcessCastSkillRequest(int skillIndex, NetworkObjectReference targetRef)
         {
             if (!IsServer) return;
 
@@ -128,7 +128,21 @@ namespace Server
                 return;
             }
 
-            // 4. Kiểm tra tài nguyên (MP)
+            // 4. Kiểm tra target hợp lệ (Lựa chọn A: nếu không có target hoặc target không hợp lệ thì bỏ qua)
+            if (!targetRef.TryGet(out NetworkObject targetNetObj))
+            {
+                Debug.Log($"[PlayerServerCombat] Client {OwnerClientId} casted skill '{skill.SkillName}' rejected: No target selected.");
+                return;
+            }
+
+            var enemyCombat = targetNetObj.GetComponent<EnemyServerCombat>();
+            if (enemyCombat == null)
+            {
+                Debug.Log($"[PlayerServerCombat] Client {OwnerClientId} casted skill '{skill.SkillName}' rejected: Target does not have EnemyServerCombat component.");
+                return;
+            }
+
+            // 5. Kiểm tra tài nguyên (MP)
             if (_networkData.CurrentMP.Value < skill.ManaCost)
             {
                 Debug.Log($"[PlayerServerCombat] Client {OwnerClientId} does not have enough MP to cast '{skill.SkillName}'. Required: {skill.ManaCost}, Current: {_networkData.CurrentMP.Value}");
@@ -139,22 +153,16 @@ namespace Server
             _nextSkillTimes[skillIndex] = Time.time + skill.Cooldown;
             _networkData.ModifyMP(-skill.ManaCost);
 
-            // Gây sát thương lên chính bản thân để dễ test thanh máu và số nhảy dame
+            // Gây sát thương lên quái vật thông qua EnemyServerCombat.TakeDamage
             float damageDealt = skill.BaseDamage;
-            _networkData.ModifyHP(-damageDealt);
-
-            // Gọi RPC phát hiệu ứng số nhảy dame tại vị trí của bản thân
-            if (_networkHandler != null)
-            {
-                _networkHandler.PlayHitEffectClientRpc((int)damageDealt, transform.position);
-            }
+            enemyCombat.TakeDamage(damageDealt);
 
             if (_stateMachine != null)
             {
                 _stateMachine.TransitionTo(PlayerState.Attacking);
             }
 
-            Debug.Log($"[PlayerServerCombat] Client {OwnerClientId} casted skill '{skill.SkillName}' successfully and dealt {damageDealt} self-damage. Remaining MP: {_networkData.CurrentMP.Value}/{_networkData.MaxMP.Value}");
+            Debug.Log($"[PlayerServerCombat] Client {OwnerClientId} casted skill '{skill.SkillName}' successfully on {targetNetObj.name} and dealt {damageDealt} damage. Remaining MP: {_networkData.CurrentMP.Value}");
         }
     }
 }

@@ -32,6 +32,21 @@ namespace Server
         private void Start()
         {
             RegisterPrefabsToPool();
+            this.SpawnGameplayManagerIfNeeded();
+        }
+
+        private void SpawnGameplayManagerIfNeeded()
+        {
+            if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsServer) return;
+
+            if (Shared.GameplayManager.Instance == null)
+            {
+                GameObject go = new GameObject("[GameplayManager]");
+                var netObj = go.AddComponent<NetworkObject>();
+                go.AddComponent<Shared.GameplayManager>();
+                netObj.Spawn();
+                Debug.Log("[NetworkEntityFactory] Dynamically spawned [GameplayManager] on Server.");
+            }
         }
 
         /// <summary>

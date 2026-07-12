@@ -76,6 +76,19 @@ namespace Server
         {
             // Reset input khi chết để tránh tiếp tục trượt đi
             _stateMachine.NetworkHandler.ResetMoveInputOnServer();
+
+            // Khởi chạy Coroutine để thu hồi người chơi về lại Pool sau 2 giây trễ (tương tự quái vật)
+            _stateMachine.StartCoroutine(DespawnAfterDelay(2f));
+        }
+
+        private System.Collections.IEnumerator DespawnAfterDelay(float delay)
+        {
+            yield return new UnityEngine.WaitForSeconds(delay);
+
+            if (_stateMachine.NetworkObject != null && _stateMachine.NetworkObject.IsSpawned)
+            {
+                _stateMachine.NetworkObject.Despawn();
+            }
         }
     }
 }
