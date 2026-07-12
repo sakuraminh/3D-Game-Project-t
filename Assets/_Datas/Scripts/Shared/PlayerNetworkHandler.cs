@@ -45,6 +45,12 @@ namespace Shared
                 if (networkObject != null)
                 {
                     networkObject.CheckObjectVisibility = CheckVisibility;
+
+                    // Tự động gộp nhóm Player vào Hierarchy
+                    if (Server.NetworkEntityFactory.Instance != null)
+                    {
+                        Server.NetworkEntityFactory.Instance.ParentPlayer(networkObject);
+                    }
                 }
             }
         }

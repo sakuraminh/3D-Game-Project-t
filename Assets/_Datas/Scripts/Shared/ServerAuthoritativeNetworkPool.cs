@@ -35,6 +35,7 @@ namespace Shared
                 return;
             }
             Instance = this;
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
         }
 

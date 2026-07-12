@@ -15,6 +15,7 @@ namespace Server
         [Header("Entity Prefabs")]
         [SerializeField] private NetworkObject _playerPrefab;
         [SerializeField] private int _playerPrewarmCount = 10;
+        [SerializeField] private NetworkObject _groupParentPrefab;
 
         private void Awake()
         {
@@ -24,6 +25,7 @@ namespace Server
                 return;
             }
             Instance = this;
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
         }
 
@@ -47,10 +49,97 @@ namespace Server
                 {
                     Debug.LogWarning("[NetworkEntityFactory] Player prefab is not assigned in the Inspector.");
                 }
+
+                if (_groupParentPrefab != null)
+                {
+                    // Đăng ký prefab cha nhóm vào pool (prewarm 3 đối tượng cho [NetworkEntitys], [Players], [Enemies])
+                    ServerAuthoritativeNetworkPool.Instance.RegisterPrefab(_groupParentPrefab, 3);
+                }
             }
             else
             {
                 Debug.LogWarning("[NetworkEntityFactory] ServerAuthoritativeNetworkPool instance is not found. Cannot register prefabs.");
+            }
+        }
+
+        /// <summary>
+        /// Tìm kiếm hoặc tự động sinh GameObject cha đồng bộ qua mạng ở runtime.
+        /// </summary>
+        private NetworkObject GetOrCreateRuntimeParent(string parentName, NetworkObject childOf = null)
+        {
+            if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsServer) return null;
+
+            // Tìm xem đã tồn tại đối tượng nào cùng tên và là NetworkObject đã Spawn chưa
+            foreach (var netObj in NetworkManager.Singleton.SpawnManager.SpawnedObjects.Values)
+            {
+                if (netObj != null && netObj.gameObject != null && netObj.gameObject.name == parentName)
+                {
+                    return netObj;
+                }
+            }
+
+            // Nếu không có, khởi tạo từ Prefab cha nhóm
+            if (_groupParentPrefab == null)
+            {
+                Debug.LogError("[NetworkEntityFactory] _groupParentPrefab chưa được gán trong Inspector!");
+                return null;
+            }
+
+            NetworkObject newParent = ServerAuthoritativeNetworkPool.Instance.GetNetworkObject(_groupParentPrefab, Vector3.zero, Quaternion.identity);
+            
+            // Spawn trên mạng trước để tránh cảnh báo NetworkVariable
+            newParent.Spawn();
+            
+            // Gán tên Network Group Parent để đồng bộ sau khi đã Spawn
+            var groupComponent = newParent.GetComponent<NetworkGroupParent>();
+            if (groupComponent != null)
+            {
+                groupComponent.ParentName.Value = parentName;
+            }
+            newParent.gameObject.name = parentName;
+
+            // Nếu có cha cấp cao hơn (ví dụ [Players] là con của [NetworkEntitys])
+            if (childOf != null)
+            {
+                newParent.TrySetParent(childOf, false);
+            }
+
+            return newParent;
+        }
+
+        /// <summary>
+        /// Gộp nhóm thực thể Player đã spawn vào nhóm cha [Players] dưới [NetworkEntitys].
+        /// </summary>
+        public void ParentPlayer(NetworkObject playerObj)
+        {
+            if (playerObj == null || NetworkManager.Singleton == null || !NetworkManager.Singleton.IsServer) return;
+
+            NetworkObject rootParent = GetOrCreateRuntimeParent("[NetworkEntitys]");
+            if (rootParent != null)
+            {
+                NetworkObject playersParent = GetOrCreateRuntimeParent("[Players]", rootParent);
+                if (playersParent != null)
+                {
+                    playerObj.TrySetParent(playersParent, false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gộp nhóm thực thể Enemy đã spawn vào nhóm cha [Enemies] dưới [NetworkEntitys].
+        /// </summary>
+        public void ParentEnemy(NetworkObject enemyObj)
+        {
+            if (enemyObj == null || NetworkManager.Singleton == null || !NetworkManager.Singleton.IsServer) return;
+
+            NetworkObject rootParent = GetOrCreateRuntimeParent("[NetworkEntitys]");
+            if (rootParent != null)
+            {
+                NetworkObject enemiesParent = GetOrCreateRuntimeParent("[Enemies]", rootParent);
+                if (enemiesParent != null)
+                {
+                    enemyObj.TrySetParent(enemiesParent, false);
+                }
             }
         }
 
@@ -80,12 +169,66 @@ namespace Server
             
             if (networkObject != null)
             {
-                // Thực hiện Spawn mạng và gán quyền sở hữu Client
+                // Thực hiện Spawn mạng và gán quyền sở hữu Client trước
                 networkObject.SpawnWithOwnership(ownerClientId);
+
+                // Gộp nhóm nhân vật vào hierarchy thích hợp
+                ParentPlayer(networkObject);
             }
             else
             {
                 Debug.LogError("[NetworkEntityFactory] Failed to get Player NetworkObject from Pool.");
+            }
+
+            return networkObject;
+        }
+
+        /// <summary>
+        /// Sinh ra một quái vật từ Object Pool (Server-Authoritative).
+        /// </summary>
+        /// <param name="enemyPrefab">Prefab của quái vật cần spawn</param>
+        /// <param name="position">Vị trí spawn</param>
+        /// <param name="rotation">Góc quay spawn</param>
+        /// <returns>NetworkObject của quái vật đã được spawn</returns>
+        public NetworkObject SpawnEnemy(NetworkObject enemyPrefab, Vector3 position, Quaternion rotation)
+        {
+            if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsServer)
+            {
+                Debug.LogError("[NetworkEntityFactory] SpawnEnemy can only be called on the Server.");
+                return null;
+            }
+
+            if (enemyPrefab == null)
+            {
+                Debug.LogError("[NetworkEntityFactory] Enemy prefab is null.");
+                return null;
+            }
+
+            // Đăng ký động prefab vào pool nếu chưa được đăng ký
+            if (ServerAuthoritativeNetworkPool.Instance != null)
+            {
+                ServerAuthoritativeNetworkPool.Instance.RegisterPrefab(enemyPrefab, 5);
+            }
+            else
+            {
+                Debug.LogError("[NetworkEntityFactory] ServerAuthoritativeNetworkPool.Instance is null!");
+                return null;
+            }
+
+            // Lấy đối tượng từ pool trên Server
+            NetworkObject networkObject = ServerAuthoritativeNetworkPool.Instance.GetNetworkObject(enemyPrefab, position, rotation);
+            
+            if (networkObject != null)
+            {
+                // Thực hiện Spawn mạng trước
+                networkObject.Spawn();
+
+                // Gộp nhóm quái vật vào hierarchy thích hợp
+                ParentEnemy(networkObject);
+            }
+            else
+            {
+                Debug.LogError("[NetworkEntityFactory] Failed to get Enemy NetworkObject from Pool.");
             }
 
             return networkObject;

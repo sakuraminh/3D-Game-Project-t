@@ -31,9 +31,40 @@ namespace Client
             }
         }
 
+        private Transform _damageTextsRoot;
+
         private void Start()
         {
+            _damageTextsRoot = GetOrCreateLocalEffectsParent("[DamageTexts]");
             InitializePool();
+        }
+
+        /// <summary>
+        /// Tìm kiếm hoặc tự động sinh GameObject cha cho các hiệu ứng cục bộ.
+        /// </summary>
+        private Transform GetOrCreateLocalEffectsParent(string parentName)
+        {
+            // 1. Tìm hoặc tạo root cha [LocalEffects] tại (0,0,0)
+            GameObject rootObj = GameObject.Find("[LocalEffects]");
+            if (rootObj == null)
+            {
+                rootObj = new GameObject("[LocalEffects]");
+                rootObj.transform.position = Vector3.zero;
+                rootObj.transform.rotation = Quaternion.identity;
+            }
+
+            // 2. Tìm hoặc tạo sub-root (ví dụ: [DamageTexts]) làm con của [LocalEffects]
+            Transform subRoot = rootObj.transform.Find(parentName);
+            if (subRoot == null)
+            {
+                GameObject subRootObj = new GameObject(parentName);
+                subRoot = subRootObj.transform;
+                subRoot.SetParent(rootObj.transform);
+                subRoot.localPosition = Vector3.zero;
+                subRoot.localRotation = Quaternion.identity;
+            }
+
+            return subRoot;
         }
 
         /// <summary>
@@ -49,7 +80,7 @@ namespace Client
 
             for (int i = 0; i < _initialPoolSize; i++)
             {
-                GameObject obj = Instantiate(_damageTextPrefab, transform);
+                GameObject obj = Instantiate(_damageTextPrefab, _damageTextsRoot);
                 obj.SetActive(false);
                 _poolQueue.Enqueue(obj);
             }
@@ -69,7 +100,7 @@ namespace Client
             else
             {
                 // Pool bị cạn kiệt do lượng sát thương sinh ra quá dày đặc, tự động tạo thêm
-                GameObject obj = Instantiate(_damageTextPrefab, transform);
+                GameObject obj = Instantiate(_damageTextPrefab, _damageTextsRoot);
                 obj.SetActive(true);
                 return obj;
             }

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dede15fb6d100454580b5b824e117c81, type: 3}
+  m_Name: GoblinConfig
+  m_EditorClassIdentifier: Assembly-CSharp::Shared.EnemyConfig
+  _maxHealth: 50
+  _moveSpeed: 3
+  _damage: 10
+  _modelAddressableKey: 
+  _detectionRadius: 8
+  _attackRange: 2
+  _attackCooldown: 1.5
+  _lootDropTable: []
