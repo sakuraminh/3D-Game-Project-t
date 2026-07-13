@@ -1,0 +1,23 @@
+{
+  "files.exclude": {
+    "**/*.meta": true,
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "Library/": true,
+    "Temp/": true,
+    "obj/": true,
+    "UserSettings/": true,
+    "Logs/": true,
+    "**/*.csproj": true,
+    "**/*.sln": true,
+    "**/*.userprefs": true,
+    "**/*.unityproj": true,
+    "**/*.booproj": true,
+    "logendnumber.txt": true,
+    ".gitignore": true,
+    ".gitattributes": true,
+    ".vs/": true,
+    ".idea/": true
+  }
+}

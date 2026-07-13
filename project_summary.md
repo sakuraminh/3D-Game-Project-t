@@ -74,8 +74,10 @@ Mã nguồn được phân tách rõ ràng theo mô hình mạng và được đ
     - Thêm trường `_gameplayManagerPrefab` và hàm `OnValidate()` vào [NetworkEntityFactory.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Server/NetworkEntityFactory.cs) để tự động gán prefab `GameplayManager` trong Editor.
     - Cấu trúc lại `SpawnGameplayManagerIfNeeded()` để sinh `GameplayManager` từ Prefab này và gọi `Spawn()` để đồng bộ qua mạng xuống Client.
     - Cập nhật [NetworkSceneCreator.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/Editor/NetworkSceneCreator.cs) tự động sinh Prefab `GameplayManager` và đăng ký nó vào `NetworkPrefabs` của `NetworkManager`. Bổ sung MenuItem `"Architecture/Setup GameplayManager Prefab"` để thiết lập nhanh trên Scene hiện tại.
-
----
+77: 14. **Cấu hình Workspace (Ẩn file .meta & thư mục hệ thống)**:
+78:     - Cấu hình file Workspace [.vscode/settings.json](file:///d:/archive/Unity_Project/3D-Game-Project-t/.vscode/settings.json) để ẩn các file `.meta`, thư mục tự sinh của Unity (`Library/`, `Temp/`, `obj/`, `UserSettings/`), thư mục log (`Logs/`), file solution (`*.sln`, `*.csproj`), file lưu mốc log của Agent (`logendnumber.txt`), và các file cấu hình Git để tối ưu hóa hiển thị trong Explorer, giúp giao diện gọn gàng và tránh rối mắt.
+79: 
+80: ---
 
 ## 3. Các Nguyên tắc Thiết kế được Áp dụng
 * **Mô hình Server-Authoritative**: Mọi thao tác tính toán di chuyển, sát thương, trạng thái nhân vật đều được tính toán và phê duyệt bởi Server. Client chỉ gửi tín hiệu yêu cầu (`ServerRpc`) và cập nhật giao diện hiển thị thông qua các sự kiện mạng (`ClientRpc` hoặc thay đổi `NetworkVariable`).
