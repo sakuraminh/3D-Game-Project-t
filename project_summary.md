@@ -64,6 +64,16 @@ Mã nguồn được phân tách rõ ràng theo mô hình mạng và được đ
     - Click chuột trái vào quái vật để chọn mục tiêu tấn công và truyền target lên Server qua RPC kỹ năng (Lựa chọn A).
     - Cấu hình Player chết tự động despawn đưa về Pool sau 2 giây trễ. Sinh Resurrection UI lúc runtime hiển thị nút Hồi sinh, gửi RPC qua `GameplayManager` để lấy lại Player mới từ Pool và thiết lập lại PlayerObject.
     - Chuyển `EnemyOverheadUIHandler` sang NetworkBehaviour, đồng bộ chuẩn xác sự kiện thay đổi máu để slider HP nổi trên đầu tụt mượt mà theo lượng máu khi chịu sát thương.
+11. **Xoay nhân vật theo Camera (Camera-Relative Movement)**:
+    - Truyền thêm tham số `cameraYaw` (góc xoay Y của camera chính trên Client) qua RPC di chuyển lên Server.
+    - Cấu trúc lại logic di chuyển trong `PlayerMovement.cs` để tính toán hướng di chuyển WASD tương đối theo hướng nhìn ngang của Camera (Camera-Relative Movement).
+    - Nhân vật tự động quay mặt theo hướng di chuyển tương đối này khi người chơi nhấn di chuyển (WASD), giữ nhân vật đứng yên khi chỉ xoay camera (thiết kế kiểu Phiêu lưu RPG 3D).
+12. **Quy trình kiểm tra Log**:
+    - Tạo file tài liệu quy tắc [.agents/rules/log_workflow.md](file:///d:/archive/Unity_Project/3D-Game-Project-t/.agents/rules/log_workflow.md) chuẩn hóa quy trình kiểm tra log tự động cho Agent và hướng dẫn kiểm tra thủ công thời gian thực cho Developer nhằm phát hiện sớm lỗi biên dịch (Compilation Error) hoặc Exception.
+13. **Khắc phục lỗi GameplayManager.Instance is null trên Client**:
+    - Thêm trường `_gameplayManagerPrefab` và hàm `OnValidate()` vào [NetworkEntityFactory.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/_Datas/Scripts/Server/NetworkEntityFactory.cs) để tự động gán prefab `GameplayManager` trong Editor.
+    - Cấu trúc lại `SpawnGameplayManagerIfNeeded()` để sinh `GameplayManager` từ Prefab này và gọi `Spawn()` để đồng bộ qua mạng xuống Client.
+    - Cập nhật [NetworkSceneCreator.cs](file:///d:/archive/Unity_Project/3D-Game-Project-t/Assets/Editor/NetworkSceneCreator.cs) tự động sinh Prefab `GameplayManager` và đăng ký nó vào `NetworkPrefabs` của `NetworkManager`. Bổ sung MenuItem `"Architecture/Setup GameplayManager Prefab"` để thiết lập nhanh trên Scene hiện tại.
 
 ---
 

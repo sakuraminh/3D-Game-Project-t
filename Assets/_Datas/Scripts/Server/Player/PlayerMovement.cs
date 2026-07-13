@@ -26,7 +26,12 @@ namespace Server
             if (_networkHandler.CurrentState.Value != Shared.PlayerState.Locomotion) return;
 
             Vector2 input = _networkHandler.MoveInput;
-            Vector3 moveDir = new Vector3(input.x, 0f, input.y);
+            float cameraYaw = _networkHandler.CameraYaw;
+
+            // Tính toán hướng di chuyển tương đối theo góc quay Y của camera
+            Quaternion cameraRotation = Quaternion.Euler(0f, cameraYaw, 0f);
+            Vector3 moveInputDirection = new Vector3(input.x, 0f, input.y);
+            Vector3 moveDir = cameraRotation * moveInputDirection;
 
             if (moveDir != Vector3.zero)
             {
@@ -37,7 +42,7 @@ namespace Server
                 // Cập nhật vị trí di chuyển
                 transform.position += moveDir * speed * Time.deltaTime;
 
-                // Xoay hướng mặt nhân vật mượt mà theo hướng di chuyển
+                // Xoay hướng mặt nhân vật mượt mà theo hướng di chuyển thực tế (moveDir)
                 Quaternion targetRotation = Quaternion.LookRotation(moveDir, Vector3.up);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }

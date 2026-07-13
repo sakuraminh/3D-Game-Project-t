@@ -20,6 +20,7 @@ namespace Shared
 
         // Lưu trữ input di chuyển hiện tại trên Server
         public Vector2 MoveInput { get; private set; } = Vector2.zero;
+        public float CameraYaw { get; private set; } = 0f;
 
         [Header("Character Config")]
         [SerializeField] private CharacterConfig _characterConfig;
@@ -107,7 +108,7 @@ namespace Shared
         /// RPC chạy trên Server để tiếp nhận input từ Owner Client.
         /// </summary>
         [ServerRpc]
-        public void SendMoveInputServerRpc(Vector2 input)
+        public void SendMoveInputServerRpc(Vector2 input, float cameraYaw)
         {
             // Validate: Nếu đang Dead, từ chối nhận input di chuyển
             if (CurrentState.Value == PlayerState.Dead)
@@ -118,6 +119,7 @@ namespace Shared
 
             // Thực hiện validate input ngay trên Server để triệt tiêu cheat tốc độ di chuyển
             MoveInput = Vector2.ClampMagnitude(input, 1f);
+            CameraYaw = cameraYaw;
         }
 
         /// <summary>

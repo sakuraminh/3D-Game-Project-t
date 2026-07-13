@@ -43,6 +43,13 @@ public static class NetworkSceneCreator
         networkManager.NetworkConfig.NetworkTransport = transport;
         networkManager.NetworkConfig.PlayerPrefab = playerPrefab;
         
+        // Tự động đăng ký GameplayManager Prefab vào NetworkManager của Scene mới
+        GameObject gmPrefab = CreateGameplayManagerPrefab();
+        if (gmPrefab != null)
+        {
+            networkManager.NetworkConfig.Prefabs.Add(new NetworkPrefab { Prefab = gmPrefab });
+        }
+        
         // Ghi chú: PlayerPrefab sẽ tự động được NetworkManager đăng ký vào danh sách NetworkPrefabs khi runtime.
         
         // 7. Lưu Scene vào đường dẫn quy hoạch Assets/_Datas/Scenes/
@@ -154,5 +161,97 @@ public static class NetworkSceneCreator
 
         Debug.Log($"[Architecture] Successfully created Player Network Prefab with Single Responsibility components at: {prefabPath}");
         return playerPrefab;
+    }
+
+    [MenuItem("Architecture/Setup GameplayManager Prefab")]
+    public static void SetupGameplayManager()
+    {
+        // 1. Tạo hoặc tải GameplayManager Prefab
+        GameObject gmPrefab = CreateGameplayManagerPrefab();
+        if (gmPrefab == null)
+        {
+            Debug.LogError("[Architecture] Failed to create GameplayManager Prefab.");
+            return;
+        }
+
+        // 2. Tìm NetworkManager trong Scene hiện tại
+        NetworkManager nm = Object.FindAnyObjectByType<NetworkManager>();
+        if (nm != null)
+        {
+            if (nm.NetworkConfig == null) nm.NetworkConfig = new NetworkConfig();
+
+            bool alreadyRegistered = false;
+            foreach (var prefab in nm.NetworkConfig.Prefabs.Prefabs)
+            {
+                if (prefab.Prefab == gmPrefab)
+                {
+                    alreadyRegistered = true;
+                    break;
+                }
+            }
+            if (!alreadyRegistered)
+            {
+                nm.NetworkConfig.Prefabs.Add(new NetworkPrefab { Prefab = gmPrefab });
+                EditorUtility.SetDirty(nm);
+                Debug.Log("[Architecture] Registered GameplayManager Prefab to NetworkManager.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[Architecture] NetworkManager not found in the current scene. Cannot register prefab.");
+        }
+
+        // 3. Tìm NetworkEntityFactory trong Scene hiện tại và gán prefab
+        var factory = Object.FindAnyObjectByType<Server.NetworkEntityFactory>();
+        if (factory != null)
+        {
+            var serializedObj = new SerializedObject(factory);
+            var prop = serializedObj.FindProperty("_gameplayManagerPrefab");
+            if (prop != null)
+            {
+                var netObj = gmPrefab.GetComponent<NetworkObject>();
+                prop.objectReferenceValue = netObj;
+                serializedObj.ApplyModifiedProperties();
+                EditorUtility.SetDirty(factory);
+                Debug.Log("[Architecture] Assigned GameplayManager Prefab to NetworkEntityFactory.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[Architecture] NetworkEntityFactory not found in the current scene.");
+        }
+
+        // 4. Lưu Scene hiện tại
+        var activeScene = SceneManager.GetActiveScene();
+        EditorSceneManager.MarkSceneDirty(activeScene);
+        EditorSceneManager.SaveScene(activeScene);
+        AssetDatabase.Refresh();
+        Debug.Log("[Architecture] Setup GameplayManager Prefab completed successfully.");
+    }
+
+    private static GameObject CreateGameplayManagerPrefab()
+    {
+        string prefabFolder = "Assets/_Datas/Prefabs/Network";
+        if (!System.IO.Directory.Exists(prefabFolder))
+        {
+            System.IO.Directory.CreateDirectory(prefabFolder);
+        }
+        string prefabPath = $"{prefabFolder}/GameplayManager.prefab";
+
+        GameObject existingPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (existingPrefab != null)
+        {
+            return existingPrefab;
+        }
+
+        GameObject tempGo = new GameObject("GameplayManager");
+        tempGo.AddComponent<NetworkObject>();
+        tempGo.AddComponent<Shared.GameplayManager>();
+
+        GameObject prefab = PrefabUtility.SaveAsPrefabAsset(tempGo, prefabPath);
+        GameObject.DestroyImmediate(tempGo);
+
+        Debug.Log($"[Architecture] Successfully created GameplayManager Prefab at: {prefabPath}");
+        return prefab;
     }
 }

@@ -16,6 +16,7 @@ namespace Server
         [SerializeField] private NetworkObject _playerPrefab;
         [SerializeField] private int _playerPrewarmCount = 10;
         [SerializeField] private NetworkObject _groupParentPrefab;
+        [SerializeField] private NetworkObject _gameplayManagerPrefab;
 
         private void Awake()
         {
@@ -41,13 +42,28 @@ namespace Server
 
             if (Shared.GameplayManager.Instance == null)
             {
-                GameObject go = new GameObject("[GameplayManager]");
-                var netObj = go.AddComponent<NetworkObject>();
-                go.AddComponent<Shared.GameplayManager>();
-                netObj.Spawn();
-                Debug.Log("[NetworkEntityFactory] Dynamically spawned [GameplayManager] on Server.");
+                if (_gameplayManagerPrefab != null)
+                {
+                    NetworkObject go = Instantiate(_gameplayManagerPrefab);
+                    go.Spawn();
+                    Debug.Log("[NetworkEntityFactory] Dynamically spawned [GameplayManager] from Prefab on Server.");
+                }
+                else
+                {
+                    Debug.LogError("[NetworkEntityFactory] GameplayManager Prefab is not assigned! Cannot spawn GameplayManager properly for Clients.");
+                }
             }
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (_gameplayManagerPrefab == null)
+            {
+                _gameplayManagerPrefab = UnityEditor.AssetDatabase.LoadAssetAtPath<NetworkObject>("Assets/_Datas/Prefabs/Network/GameplayManager.prefab");
+            }
+        }
+#endif
 
         /// <summary>
         /// Đăng ký toàn bộ Prefabs cần thiết vào hệ thống Object Pool của mạng.

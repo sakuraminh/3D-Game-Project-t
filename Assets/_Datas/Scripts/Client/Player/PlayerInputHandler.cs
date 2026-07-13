@@ -32,7 +32,12 @@ namespace Client
                 if (InputManager.Instance != null)
                 {
                     Vector2 moveInput = InputManager.Instance.MoveInput;
-                    _networkHandler.SendMoveInputServerRpc(moveInput);
+                    float cameraYaw = 0f;
+                    if (Camera.main != null)
+                    {
+                        cameraYaw = Camera.main.transform.eulerAngles.y;
+                    }
+                    _networkHandler.SendMoveInputServerRpc(moveInput, cameraYaw);
                 }
 
                 // 2. Chọn mục tiêu quái vật khi nhấn chuột trái

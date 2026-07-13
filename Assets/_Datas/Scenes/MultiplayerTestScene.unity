@@ -301,8 +301,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Server.NetworkEntityFactory
   _playerPrefab: {fileID: 6809322598627931730, guid: 4b102de5ae158c144a8009a7a0c3b6a1, type: 3}
-  _playerPrewarmCount: 20
+  _playerPrewarmCount: 2
   _groupParentPrefab: {fileID: 6853131501314036515, guid: b6e4358a1cdc6ae4d95351a9b1a51a65, type: 3}
+  _gameplayManagerPrefab: {fileID: 1710987557344367966, guid: 6b9839bfc69a1e74381f4923f38b7af7, type: 3}
 --- !u!1 &242500231
 GameObject:
   m_ObjectHideFlags: 0
@@ -393,7 +394,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Client.DamageTextPoolManager
   _damageTextPrefab: {fileID: 1860527544237992647, guid: a06de25c7db012b448d056a12f79064c, type: 3}
-  _initialPoolSize: 25
+  _initialPoolSize: 5
 --- !u!1 &887567133
 GameObject:
   m_ObjectHideFlags: 0
@@ -801,14 +802,6 @@ PrefabInstance:
     - target: {fileID: 2394061555326686157, guid: cb58b5146b91f144cb5f7502b18ace70, type: 3}
       propertyPath: m_Name
       value: Envs
-      objectReference: {fileID: 0}
-    - target: {fileID: 3140789375337329588, guid: cb58b5146b91f144cb5f7502b18ace70, type: 3}
-      propertyPath: m_NavMeshData
-      value: 
-      objectReference: {fileID: 23800000, guid: 7de750fe206a62249a07aeced027296d, type: 2}
-    - target: {fileID: 3140789375337329588, guid: cb58b5146b91f144cb5f7502b18ace70, type: 3}
-      propertyPath: m_CollectObjects
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

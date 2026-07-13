@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a16bb05b27cfbc4293dd03b8f87494e, type: 3}
   m_Name: 1
   m_EditorClassIdentifier: Assembly-CSharp::Shared.CharacterConfig
-  _maxHealth: 1000
-  _maxMana: 1000
+  _maxHealth: 100
+  _maxMana: 100
   _baseDefense: 10
   _moveSpeed: 5
   _rotationSpeed: 12
